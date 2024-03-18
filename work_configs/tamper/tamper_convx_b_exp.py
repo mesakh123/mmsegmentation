@@ -44,7 +44,21 @@ model = dict(
         norm_cfg=norm_cfg,
         align_corners=False,
         out_channels=num_classes,
-        loss_decode=dict(type="CrossEntropyLoss", use_sigmoid=False, loss_weight=1.0),
+        loss_decode=[
+            dict(
+                type="CrossEntropyLoss",
+                use_sigmoid=False,
+                loss_weight=1.0,
+                class_weight=[0, 1],
+            ),
+            dict(
+                type="LovaszLoss",
+                loss_weight=1,
+                per_image=True,
+                class_weight=[0.1, 1],
+            ),
+        ],
+        sampler=dict(type="OHEMPixelSampler", thresh=0.7, min_kept=100000),
     ),
     auxiliary_head=dict(
         type="FCNHead",
@@ -60,8 +74,18 @@ model = dict(
         align_corners=False,
         # loss_decode=dict(type="CrossEntropyLoss", use_sigmoid=False, loss_weight=0.4),
         loss_decode=[
-            dict(type="CrossEntropyLoss", use_sigmoid=False, loss_weight=1.0),
-            dict(type="LovaszLoss", loss_weight=0.5, reduction="none"),
+            dict(
+                type="CrossEntropyLoss",
+                use_sigmoid=False,
+                loss_weight=1.0,
+                class_weight=[0, 1],
+            ),
+            dict(
+                type="LovaszLoss",
+                loss_weight=1,
+                per_image=True,
+                class_weight=[0.1, 1],
+            ),
         ],
         sampler=dict(type="OHEMPixelSampler", thresh=0.7, min_kept=100000),
     ),
