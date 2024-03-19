@@ -1,6 +1,8 @@
 norm_cfg = dict(type="SyncBN", requires_grad=True)
 custom_imports = dict(imports="mmpretrain.models", allow_failed_imports=False)
 checkpoint_file = "https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-base_3rdparty_32xb128-noema_in1k_20220301-2a0ee547.pth"  # noqa
+# checkpoint_file = 'https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-xlarge_3rdparty_in21k_20220301-08aa5ddc.pth'  # noqa
+
 data_preprocessor = dict(
     type="SegDataPreProcessor",
     mean=[123.675, 116.28, 103.53],
@@ -8,7 +10,7 @@ data_preprocessor = dict(
     bgr_to_rgb=True,
     pad_val=0,
     seg_pad_val=0,
-    size=(512, 512),
+    size=(1024, 1024),
 )
 num_classes = 2
 metainfo = dict(
@@ -16,7 +18,7 @@ metainfo = dict(
         "normal",
         "forged",
     ),
-    palette=[[0, 0, 0], [255, 255, 255]],
+    palette=[0,1],
 )
 model = dict(
     type="EncoderDecoder",
@@ -97,8 +99,8 @@ model = dict(
 
 # dataset settings
 dataset_type = "TamperDataset"
-data_root = "data/"
-crop_size = (512, 512)
+data_root = r"data"
+crop_size = (1024, 1024)
 train_pipeline = [
     dict(type="LoadImageFromFile"),
     dict(type="LoadAnnotations"),
@@ -196,8 +198,9 @@ optim_wrapper = dict(
     constructor="LearningRateDecayOptimizerConstructor",
     loss_scale="dynamic",
 )
+fp16 = dict(loss_scale='dynamic')
 
-max_iters = 100
+max_iters = 80000
 param_scheduler = [
     dict(type="PolyLR", eta_min=1e-4, power=1, begin=0, end=max_iters, by_epoch=False)
 ]
